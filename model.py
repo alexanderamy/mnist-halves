@@ -22,10 +22,6 @@ class SupUCA(nn.Module):
         X = X.view(batch_dim, self.img_dim)
         Y = Y.view(batch_dim, self.img_dim)
 
-        # center the training data by removing the mean
-        X = X - X.mean()
-        Y = Y - Y.mean()
-
         # project X and Y onto shared latent space via W_x and W_y, respectively
         W_xX = self.W_x(X)
         W_yY = self.W_y(Y)

@@ -8,7 +8,7 @@ def LTot(W_xX, W_yY, V_xW_xX, V_yW_yY, V_yW_xX, V_xW_yY, V_xW_yV_yW_xX, V_yW_xV_
     loss5 = LOrth(W_xX, W_yY) 
     loss6 = LCyc(V_xW_yV_yW_xX, V_yW_xV_xW_yY, X, Y)
     loss = loss1 + loss2 + loss3 + loss4 + loss5 + loss6
-    return loss4
+    return loss
 
 def LG_c(W_xX, W_yY):
     loss = torch.nn.MSELoss(reduction='mean')
