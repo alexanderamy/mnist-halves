@@ -7,7 +7,7 @@ def LTot(W_xX, W_yY, V_xW_xX, V_yW_yY, V_yW_xX, V_xW_yY, V_xW_yV_yW_xX, V_yW_xV_
     loss4 = LRec(V_xW_xX, V_yW_yY, X, Y)
     loss5 = LOrth(W_xX, W_yY) 
     loss6 = LCyc(V_xW_yV_yW_xX, V_yW_xV_xW_yY, X, Y)
-    loss = loss1 + loss2 + loss3 + 100 * loss4 + loss5 + loss6
+    loss = loss1 + loss2 + loss3 + loss4 + loss5 + loss6
     return loss
 
 def LG_c(W_xX, W_yY):
@@ -40,10 +40,10 @@ def LRec(V_xW_xX, V_yW_yY, X, Y):
 def LOrth(W_xX, W_yY):
     loss1 = torch.nn.MSELoss(reduction='mean')
     loss2 = torch.nn.MSELoss(reduction='mean')
-    temp1 = torch.matmul(W_xX, W_xX.t())
-    temp2 = torch.matmul(W_yY, W_yY.t())    
-    loss1 = loss1(temp1, torch.eye(temp1.shape[-2]))
-    loss2 = loss2(temp2, torch.eye(temp2.shape[-2]))
+    sym1 = torch.matmul(W_xX, W_xX.t())
+    sym2 = torch.matmul(W_yY, W_yY.t())    
+    loss1 = loss1(sym1, torch.eye(sym1.shape[-2]))
+    loss2 = loss2(sym2, torch.eye(sym2.shape[-2]))
     loss1 = loss1 ** 2
     loss2 = loss2 ** 2
     return loss1 + loss2    

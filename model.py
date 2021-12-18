@@ -39,6 +39,6 @@ class SupUCA(nn.Module):
         # project reconstructed X and Y back onto shared latent space, this time via W_y and W_x, respectively
         # reconstruct projections in domains of original input
         V_xW_yV_yW_xX = self.V_x(self.W_y(V_yW_xX))
-        V_yW_xV_xW_yY = self.V_x(self.W_x(V_xW_yY))
+        V_yW_xV_xW_yY = self.V_y(self.W_x(V_xW_yY))
 
         return W_xX, W_yY, V_xW_xX, V_yW_yY, V_yW_xX, V_xW_yY, V_xW_yV_yW_xX, V_yW_xV_xW_yY, X, Y

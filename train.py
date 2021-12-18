@@ -6,7 +6,7 @@ def train(model, optimizer, scheduler, train_loader, test_loader, device, epochs
         train_loss = 0
         test_loss = 0
 
-        for _, (X, Y) in enumerate(train_loader):
+        for _, (X, Y, _) in enumerate(train_loader):
             X, Y = X.to(device), Y.to(device)
             optimizer.zero_grad()
             loss = LTot(*model(X, Y))  
@@ -16,7 +16,7 @@ def train(model, optimizer, scheduler, train_loader, test_loader, device, epochs
 
         model.eval()
 
-        for _, (X, Y) in enumerate(test_loader):
+        for _, (X, Y, _) in enumerate(test_loader):
             X, Y = X.to(device), Y.to(device)
             loss = LTot(*model(X, Y))  
             test_loss += loss.data
