@@ -22,3 +22,22 @@ def make_sims_matrix(model, dataset):
 def get_matches(sims):
     row_ind, col_ind = linear_sum_assignment(sims, maximize=True)
     return row_ind, col_ind
+
+def eval_matches(dataset, row_ind, col_ind, eval_type='exact'):
+    if eval_type == 'exact':
+        num = row_ind.shape[0] - np.count_nonzero(row_ind - col_ind)
+        tot = row_ind.shape[0]
+        acc = num / tot
+        print(f'{acc:.1%}')
+    elif eval_type == 'correct':
+        num = (dataset.targets == dataset.targets[col_ind]).sum().item()
+        tot = row_ind.shape[0]
+        acc = num / tot
+        print(f'{acc:.1%}')
+    elif eval_type == 'label':
+        for i in range(10):
+            num = ((dataset.targets - i == 0) * (dataset.targets[col_ind] - i == 0)).sum().item() 
+            tot = np.unique(dataset.targets, return_counts=True)[1][i]
+            acc = num / tot
+            print(f'{i}: {acc:.1%}')
+
