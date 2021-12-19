@@ -1,3 +1,4 @@
+import torch
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -5,13 +6,17 @@ def make_figure(model, data, dataset, row_ind, col_ind, sample='random', n=5):
     if sample == 'random':
         idxs = np.random.choice(row_ind, n, replace=False)
     elif sample == 'correct':
-        correct = (dataset.targets == dataset.targets[col_ind]).numpy()
+        if isinstance(dataset, torch.utils.data.dataset.Subset):
+            head = len(dataset)
+            correct = (dataset.dataset.targets[:head] == dataset.dataset.targets[:head][col_ind]).numpy()
+        else:
+            correct = (dataset.targets == dataset.targets[col_ind]).numpy()
         correct = np.where(correct == True)[0]
         idxs = np.random.choice(correct, n, replace=False)
-    elif sample == 'cherrypicked':
-        cherrypicked = row_ind == col_ind
-        cherrypicked = np.where(cherrypicked == True)[0]
-        idxs = np.random.choice(cherrypicked, n, replace=False)
+    elif sample == 'exact':
+        exact = row_ind == col_ind
+        exact = np.where(exact == True)[0]
+        idxs = np.random.choice(exact, n, replace=False)
     plots = ['top', 'ground truth bottom', 'estimated bottom', 'retrieved bottom']
     fig, axes = plt.subplots(4, len(idxs), figsize=(28, 14), gridspec_kw = {'wspace':0, 'hspace':0})
     for i in range(len(plots)):
