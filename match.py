@@ -2,26 +2,29 @@ import torch
 import numpy as np
 import torch.nn as nn
 from tqdm import tqdm
+from scipy.spatial import distance
 from scipy.optimize import linear_sum_assignment
 
-def make_sims_matrix(model, dataset, n=np.inf):
+def compute_sims(model, dataset, metric, device):
+    '''
+    see https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.distance.cdist.html
+    for available metrics
+    '''
     model.eval()
-    sims = []
-    cos = nn.CosineSimilarity(dim=1, eps=1e-6)
-    for i in tqdm(range(min(n, len(dataset)))):
-        X_i = dataset[i][0]
-        sims_i = []
-        est_target = X_i.reshape(1, 14 * 28)
-        est_target = est_target @ model.W_x.weight.t()
-        est_target = est_target @ model.V_y.weight.t()
-        for _, (_, Y_j, label_j) in enumerate(dataset):
-            pot_match = Y_j.reshape(1, 14 * 28)
-            sims_i.append(max(0.0, cos(est_target, pot_match).item()))
-        sims.append(sims_i)
+    act_targets = []
+    est_targets = []
+    for _, (X, Y, _) in enumerate(dataset):
+        X, Y = X.to(device), Y.to(device)
+        _, _, _, _, V_yW_xX, _, _, _, _, Y = model(X, Y)
+        act_targets.append(Y)
+        est_targets.append(V_yW_xX)
+    act_targets = torch.cat(act_targets).detach().numpy()
+    est_targets = torch.cat(est_targets).detach().numpy()
+    sims = distance.cdist(act_targets, est_targets, metric)
     return sims
 
 def get_matches(sims):
-    row_ind, col_ind = linear_sum_assignment(sims, maximize=True)
+    row_ind, col_ind = linear_sum_assignment(sims)
     return row_ind, col_ind
 
 def eval_matches(dataset, row_ind, col_ind, eval_type='exact'):
@@ -33,9 +36,9 @@ def eval_matches(dataset, row_ind, col_ind, eval_type='exact'):
     elif eval_type == 'correct':
         if isinstance(dataset, torch.utils.data.dataset.Subset):
             head = len(dataset)
-            num = (dataset.dataset.targets[:head] == dataset.dataset.targets[:head][col_ind]).sum().item()
+            num = (dataset.dataset.labels[:head] == dataset.dataset.labels[:head][col_ind]).sum().item()
         else:
-            num = (dataset.targets == dataset.targets[col_ind]).sum().item()
+            num = (dataset.labels == dataset.labels[col_ind]).sum().item()
         tot = row_ind.shape[0]
         acc = num / tot
         print(f'{acc:.1%}')
@@ -43,11 +46,11 @@ def eval_matches(dataset, row_ind, col_ind, eval_type='exact'):
         for i in range(10):
             if isinstance(dataset, torch.utils.data.dataset.Subset):
                 head = len(dataset)
-                num = ((dataset.dataset.targets[:head] - i == 0) * (dataset.dataset.targets[:head][col_ind] - i == 0)).sum().item()
-                tot = np.unique(dataset.dataset.targets[:head], return_counts=True)[1][i]
+                num = ((dataset.dataset.labels[:head] - i == 0) * (dataset.dataset.labels[:head][col_ind] - i == 0)).sum().item()
+                tot = np.unique(dataset.dataset.labels[:head], return_counts=True)[1][i]
             else:
-                num = ((dataset.targets - i == 0) * (dataset.targets[col_ind] - i == 0)).sum().item() 
-                tot = np.unique(dataset.targets, return_counts=True)[1][i]
+                num = ((dataset.labels - i == 0) * (dataset.labels[col_ind] - i == 0)).sum().item() 
+                tot = np.unique(dataset.labels, return_counts=True)[1][i]
             acc = num / tot
             print(f'{i}: {acc:.1%}')
 
