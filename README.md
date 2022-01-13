@@ -8,7 +8,7 @@ Hoshen, Y.,  Wolf, L.,  "Unsupervised Correlation Analysis", CVPR, 2018, [arXiv:
 
 Supervised Correlation Analysis (SCA) is based on [Canonical Correlation Analysis](https://en.wikipedia.org/wiki/Canonical_correlation) (CCA), which seeks to model the relationships *between* two datasets in a way that is analogous to how PCA models the relationships between variables *within* a single dataset. 
 
-To do this, we train matrices Wx and Wy to project datasets X and Y, respectively, onto a shared latent space C such that the sum of correlations between between the projected datasets are maximized, subject to projected the projected data from within a single dataset being uncorrelated. Matrices Vx and Vy are then trained to reconstruct vectors from C in the domain of the original data. The overall architecture is as follows:
+To do this, we train matrices Wx and Wy to project datasets X and Y, respectively, onto a shared latent space C such that the sum of correlations between between the projected datasets are maximized, subject to the projected data from within a single dataset being uncorrelated. Matrices Vx and Vy are then trained to reconstruct vectors from C in the domain of the original data. The overall architecture is as follows:
 
 ![image](images/architecture.png)
 
