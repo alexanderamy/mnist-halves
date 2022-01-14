@@ -4,7 +4,7 @@ This is an implementation of Supervised Correlation Analysis in Python with PyTo
 
 Hoshen, Y.,  Wolf, L.,  "Unsupervised Correlation Analysis", CVPR, 2018, [arXiv:1804.00347](https://arxiv.org/pdf/1804.00347.pdf).
 
-# Architecture
+## Architecture
 
 Supervised Correlation Analysis (SCA) is based on [Canonical Correlation Analysis](https://en.wikipedia.org/wiki/Canonical_correlation) (CCA), which seeks to model the relationships *between* two datasets in a way that is analogous to how PCA models the relationships between variables *within* a single dataset. 
 
@@ -12,7 +12,7 @@ To do this, we train matrices Wx and Wy to project datasets X and Y, respectivel
 
 ![image](images/architecture.png)
 
-# Objective Function
+## Objective Function
 The loss minimzed during training comprises five main objectives:
 1. Reconstruction of X in the domain of X / reconstruction of Y in the domain of Y (tops projected to tops)
 2. Reconstruction of X in the domain of Y / reconstruction of Y in the domain of X (tops projected to bottoms)
